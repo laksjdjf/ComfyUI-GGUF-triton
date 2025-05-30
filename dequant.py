@@ -233,16 +233,33 @@ def dequantize_blocks_Q2_K(blocks, block_size, type_size, dtype=None):
 
     return qs.reshape((n_blocks, -1))
 
-dequantize_functions = {
-    gguf.GGMLQuantizationType.BF16: dequantize_blocks_BF16,
-    gguf.GGMLQuantizationType.Q8_0: dequantize_blocks_Q8_0,
-    gguf.GGMLQuantizationType.Q5_1: dequantize_blocks_Q5_1,
-    gguf.GGMLQuantizationType.Q5_0: dequantize_blocks_Q5_0,
-    gguf.GGMLQuantizationType.Q4_1: dequantize_blocks_Q4_1,
-    gguf.GGMLQuantizationType.Q4_0: dequantize_blocks_Q4_0,
-    gguf.GGMLQuantizationType.Q6_K: dequantize_blocks_Q6_K,
-    gguf.GGMLQuantizationType.Q5_K: dequantize_blocks_Q5_K,
-    gguf.GGMLQuantizationType.Q4_K: dequantize_blocks_Q4_K,
-    gguf.GGMLQuantizationType.Q3_K: dequantize_blocks_Q3_K,
-    gguf.GGMLQuantizationType.Q2_K: dequantize_blocks_Q2_K,
-}
+from . import triton_dequant
+
+if triton_dequant.use_triton:
+    dequantize_functions = {
+        gguf.GGMLQuantizationType.BF16: dequantize_blocks_BF16,
+        gguf.GGMLQuantizationType.Q8_0: dequantize_blocks_Q8_0,
+        gguf.GGMLQuantizationType.Q5_1: dequantize_blocks_Q5_1,
+        gguf.GGMLQuantizationType.Q5_0: dequantize_blocks_Q5_0,
+        gguf.GGMLQuantizationType.Q4_1: dequantize_blocks_Q4_1,
+        gguf.GGMLQuantizationType.Q4_0: triton_dequant.dequantize_blocks_q4_0_triton,
+        gguf.GGMLQuantizationType.Q6_K: dequantize_blocks_Q6_K,
+        gguf.GGMLQuantizationType.Q5_K: dequantize_blocks_Q5_K,
+        gguf.GGMLQuantizationType.Q4_K: dequantize_blocks_Q4_K,
+        gguf.GGMLQuantizationType.Q3_K: dequantize_blocks_Q3_K,
+        gguf.GGMLQuantizationType.Q2_K: dequantize_blocks_Q2_K,
+    }    
+else:
+    dequantize_functions = {
+        gguf.GGMLQuantizationType.BF16: dequantize_blocks_BF16,
+        gguf.GGMLQuantizationType.Q8_0: dequantize_blocks_Q8_0,
+        gguf.GGMLQuantizationType.Q5_1: dequantize_blocks_Q5_1,
+        gguf.GGMLQuantizationType.Q5_0: dequantize_blocks_Q5_0,
+        gguf.GGMLQuantizationType.Q4_1: dequantize_blocks_Q4_1,
+        gguf.GGMLQuantizationType.Q4_0: dequantize_blocks_Q4_0,
+        gguf.GGMLQuantizationType.Q6_K: dequantize_blocks_Q6_K,
+        gguf.GGMLQuantizationType.Q5_K: dequantize_blocks_Q5_K,
+        gguf.GGMLQuantizationType.Q4_K: dequantize_blocks_Q4_K,
+        gguf.GGMLQuantizationType.Q3_K: dequantize_blocks_Q3_K,
+        gguf.GGMLQuantizationType.Q2_K: dequantize_blocks_Q2_K,
+    }
