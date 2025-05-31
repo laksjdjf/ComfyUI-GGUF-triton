@@ -243,7 +243,7 @@ if triton_dequant.use_triton:
         gguf.GGMLQuantizationType.Q5_0: dequantize_blocks_Q5_0,
         gguf.GGMLQuantizationType.Q4_1: triton_dequant.dequantize_blocks_Q4_1_triton,
         gguf.GGMLQuantizationType.Q4_0: triton_dequant.dequantize_blocks_Q4_0_triton,
-        gguf.GGMLQuantizationType.Q6_K: dequantize_blocks_Q6_K,
+        gguf.GGMLQuantizationType.Q6_K: triton_dequant.dequantize_blocks_Q6_K_triton,
         gguf.GGMLQuantizationType.Q5_K: dequantize_blocks_Q5_K,
         gguf.GGMLQuantizationType.Q4_K: triton_dequant.dequantize_blocks_Q4_K_triton,
         gguf.GGMLQuantizationType.Q3_K: dequantize_blocks_Q3_K,
