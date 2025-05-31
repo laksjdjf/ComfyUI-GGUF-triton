@@ -298,7 +298,6 @@ if use_triton:
         d = d.view(torch.float16)
 
         out_dtype = TORCH_DTYPES_TO_TL_DTYPES.get(dtype, tl.float16)
-        print(d.shape, ql.shape, qh.shape, scales.shape)
 
         dequant_Q6_K_kernel[(n_blocks, )](
             scale_ptr=scales.contiguous(),
