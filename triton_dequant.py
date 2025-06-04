@@ -485,7 +485,7 @@ if use_triton:
         q_i8 = (ql_nib | (qh_bit << 4)).to(tl.int8) - 16
 
         tl.store(out_ptr + pid * BLOCK_SIZE + idx,
-                 scale * q_i8.to(OUT_DTYPE))
+                 scale.to(OUT_DTYPE) * q_i8.to(OUT_DTYPE))
 
     def dequantize_blocks_Q5_0_triton(
         blocks: torch.ByteTensor,
@@ -501,7 +501,7 @@ if use_triton:
         out_dtype = TORCH_DTYPES_TO_TL_DTYPES.get(dtype, tl.float16)
 
         d, qh, qs = split_block_dims(blocks, 2, 4)
-        d = d.view(torch.float16)
+        d = d.view(torch.float16).to(dtype)
         qh = qh.contiguous().view(torch.int32)
 
         dequant_Q5_0_kernel[(n_blocks, )](
