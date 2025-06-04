@@ -337,8 +337,8 @@ if use_triton:
         idx256  = tl.arange(0, BLOCK_SIZE)
         row32   = idx256 // 32
 
-        byte_ql = (idx256 // 128) * 64 + (idx256 % 64)
-        sh_ql   = ((idx256 % 128) // 64) * 4
+        byte_ql = row32 * 16 + (idx256 % 32) // 2
+        sh_ql   = (idx256 % 2) * 4
         ql_bytes = tl.load(ql_ptr + ql_off + byte_ql, cache_modifier='.cg')
         ql_nib   = (ql_bytes >> sh_ql) & 0x0F
 
@@ -445,7 +445,7 @@ if use_triton:
         d, m, qh, qs = split_block_dims(blocks, 2, 2, 4)
         d = d.view(torch.float16)
         m = m.view(torch.float16)
-        qh = qh.view(torch.int32)
+        qh = qh.contiguous().view(torch.int32)
 
         dequant_Q5_1_kernel[(n_blocks, )](
             scale_ptr=d.contiguous(),
@@ -502,7 +502,7 @@ if use_triton:
 
         d, qh, qs = split_block_dims(blocks, 2, 4)
         d = d.view(torch.float16)
-        qh = qh.view(torch.int32)
+        qh = qh.contiguous().view(torch.int32)
 
         dequant_Q5_0_kernel[(n_blocks, )](
             scale_ptr=d.contiguous(),
